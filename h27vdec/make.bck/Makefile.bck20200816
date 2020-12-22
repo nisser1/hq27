@@ -1,0 +1,59 @@
+INCLUDE=-I./include/
+
+LIBS=./lib/libmpi.a\
+	./lib/libhdmi.a\
+	./lib/libdpu_rect.a\
+	./lib/libdpu_match.a\
+	./lib/libhiavslut.a\
+	./lib/libpos_query.a\
+	./lib/libmotionfusion.a\
+	./lib/lib_hiae.a\
+	./lib/libisp.a\
+	./lib/lib_hidehaze.a\
+	./lib/lib_hidrc.a\
+	./lib/lib_hildci.a\
+	./lib/libsns_imx477.a\
+	./lib/libsns_imx290.a\
+	./lib/libsns_imx334.a\
+	./lib/libsns_imx334_slave.a\
+	./lib/libsns_imx277_slvs.a\
+	./lib/lib_hiawb.a\
+	./lib/libVoiceEngine.a\
+        ./lib/libupvqe.a\
+        ./lib/libdnvqe.a\
+	./lib/libaacenc.a\
+	./lib/libaacdec.a\
+	./lib/libsecurec.a -lpthread -lm -ldl -lc -lgcc_eh
+
+#	./lib/libmpi.a\
+#	./lib/libVoiceEngine.a\
+#	./lib/libhi_cipher.a\
+#	./lib/libupvqe.a\
+#	./lib/libdnvqe.a\
+#	./lib/libaacenc.a\
+#	./lib/libaacdec.a\
+#	./lib/lib_hiae.a \
+#	./lib/libisp.a \
+#	./lib/lib_hidehaze.a \
+#	./lib/lib_hidrc.a \
+#	./lib/lib_hildci.a \
+#	./lib/libsns_imx477.a \
+#	./lib/libsns_imx290.a \
+#	./lib/libsns_imx334.a \
+#	./lib/libsns_imx334_slave.a \
+#	./lib/libsns_imx277_slvs.a \
+#	./lib/lib_hiawb.a \
+#	./lib/libhdmi.a \
+#	./lib/libdpu_rect.a \
+#	./lib/libdpu_match.a \
+#	./lib/libhiavslut.a \
+#	./lib/libpos_query.a \
+#	./lib/libmotionfusion.a -lpthread -lm -ldl -lc -lgcc_eh 
+all:rtsp-h264
+
+rtsp-h264:	
+	aarch64-himix100-linux-gcc -o rtsp-h264 -Dhi3559av100 -DSENSOR0_TYPE=SONY_IMX334_MIPI_8M_30FPS_12BIT  -DSENSOR1_TYPE=SONY_IMX334_MIPI_8M_30FPS_12BIT -DSENSOR2_TYPE=SONY_IMX334_MIPI_8M_30FPS_12BIT -DSENSOR3_TYPE=SONY_IMX334_MIPI_8M_30FPS_12BIT -DSENSOR4_TYPE=SONY_IMX277_SLVS_8M_30FPS_12BIT -DSENSOR5_TYPE=SONY_IMX277_SLVS_8M_30FPS_12BIT -DSENSOR6_TYPE=SONY_IMX277_SLVS_8M_30FPS_12BIT -DSENSOR7_TYPE=SONY_IMX277_SLVS_8M_30FPS_12BIT -DHI_RELEASE -DHI_XXXX -DISP_V2 -DHI_ACODEC_TYPE_INNER -fno-aggressive-loop-optimizations -ffunction-sections -ldl -fdata-sections audio_aac_adp.c loadbmp.c sample_comm_audio.c sample_comm_isp.c sample_comm_sys.c sample_comm_vdec.c sample_comm_vi.c sample_comm_vo.c sample_comm_vpss.c sample_vdec.c $(INCLUDE) $(LIBS) 																																																	 																							
+#	aarch64-himix100-linux-gcc -o rtsp-h264 -Dhi3516ev200 -DSENSOR0_TYPE=GALAXYCORE_GC2053_MIPI_2M_30FPS_10BIT -DHI_RELEASE -DHI_XXXX -DISP_V2 -DHI_ACODEC_TYPE_INNER -mcpu=arm926ej-s -mno-unaligned-access -fno-aggressive-loop-optimizations -ffunction-sections -fdata-sections main.c ringfifo.c rtputils.c rtspservice.c rtsputils.c loadbmp.c sample_comm_audio.c sample_comm_isp.c sample_comm_sys.c  sample_comm_venc.c sample_comm_vi.c sample_comm_vo.c sample_comm_vpss.c sample_venc.c $(INCLUDE) $(LIBS)
+
+clean:
+	rm -rfv rtsp-h264

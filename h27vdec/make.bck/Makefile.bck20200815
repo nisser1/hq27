@@ -1,0 +1,41 @@
+# Hisilicon Hi35xx sample Makefile 
+include ../Makefile.param
+
+TARGET=sample_vdec
+
+CPPFILES = $(wildcard *.cpp)											
+CFILES = $(wildcard *.c)	
+
+# compile linux or HuaweiLite
+#这里包含的
+# target source
+OBJFILE = $(CFILES:*.c=*.o) $(CPPFILES:*.cpp=*.o)  
+
+.PHONY : clean all
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS) $(OBJFILE)  
+	$(LINK) $^  -Wall -O2 -o $@ $(MPI_LIBS) $(SENSOR_LIBS) $(AUDIO_LIBA) $(REL_LIB)/libsecurec.a $(LIVE_555_LIBS) -lssl -lcrypto
+
+%.o:%.c																			
+	$(CC) $(CFLAGS) -o $@  $<
+	
+%.o:%.cpp																		
+	$(CPP)$(CFLAGS) -o $@  $< 	
+
+focus_bfin:
+	echo current make MAKELEVEL=$(MAKELEVEL)
+
+clean:
+	@rm -f $(TARGET)
+	@rm -f $(OBJS)
+	@rm -f $(COMM_OBJ)
+
+
+cleanstream:
+	@rm -f *.h264
+	@rm -f *.h265
+	@rm -f *.jpg
+	@rm -f *.mjp
+	@rm -f *.mp4

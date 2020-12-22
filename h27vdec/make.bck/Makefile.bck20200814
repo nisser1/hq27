@@ -1,0 +1,32 @@
+# Hisilicon Hi35xx sample Makefile
+##makefile执行顺序  
+#1:  读取所有的makefile文件 MAKEFILES变量指定的 include指定的 -f 明确规则 和隐藏规则 建立所有目标和以来关系结构链表
+#2： 根据第一阶段已经建立的依赖关系结构链表决定哪些目标需要更新，并使用对应的规则来重建这些目标
+include ../Makefile.param
+
+SRCS := $(wildcard *.c) $(wildcard *.cpp)
+TARGET := $(SRCS:%.cpp=%)
+
+# compile linux or HuaweiLite
+#这里包含的
+# target source
+OBJS  := $(SRCS:%.c=%.o)
+
+.PHONY : clean all
+
+all: $(TARGET)
+
+$(TARGET):$(COMM_OBJ) $(OBJS)
+	@$(CC) $(CFLAGS) -lpthread -lm -o $@ $^ $(MPI_LIBS) $(SENSOR_LIBS) $(AUDIO_LIBA) $(REL_LIB)/libsecurec.a $(LIVE_555_LIBS) -lssl -lcrypto
+
+clean:
+	@rm -f ./*.o
+	@rm -f sample_vdec
+
+
+cleanstream:
+	@rm -f *.h264
+	@rm -f *.h265
+	@rm -f *.jpg
+	@rm -f *.mjp
+	@rm -f *.mp4

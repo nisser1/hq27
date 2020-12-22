@@ -1,0 +1,45 @@
+##### End of variables to change
+NAME = libmediaClient
+#MEDIA_CLIENT = test$(EXE)
+
+USAGE_ENVIRONMENT_LIB = $(NAME).$(LIB_SUFFIX)
+ALL = $(USAGE_ENVIRONMENT_LIB)
+all:	$(ALL)
+
+OBJS = testRTSPClient.$(OBJ) RecvThread.$(OBJ) RecvLinklist.$(OBJ) fifo_buffer.$(OBJ)
+
+$(USAGE_ENVIRONMENT_LIB): $(OBJS)
+	$(LIBRARY_LINK)$@ $(LIBRARY_LINK_OPTS) $(OBJS)
+
+.$(C).$(OBJ):
+	$(C_COMPILER) -c $(C_FLAGS) $<       
+
+.$(CPP).$(OBJ):
+	$(CPLUSPLUS_COMPILER) -c $(CPLUSPLUS_FLAGS) $<
+
+#test1.$(CPP): 			url.h	testcpp.h	
+testRTSPClient.$(CPP):	 RecvLinklist.h RecvThread.h
+RecvLinklist.$(C):		RecvLinklist.h
+RecvThread.$(C):		RecvThread.h		
+fifo_buffer.$(C):		fifo_buffer.h
+clean:
+	-rm -rf *.$(OBJ) $(ALL) core *.core *~ include/*~	
+	
+	
+install: install1 $(INSTALL2)
+install1: $(USAGE_ENVIRONMENT_LIB)
+	  install -d $(DESTDIR)$(PREFIX)/include/mediaClient $(DESTDIR)$(LIBDIR)
+	  install -m 644 ./*.h $(DESTDIR)$(PREFIX)/include/mediaClient
+	  install -m 644 $(USAGE_ENVIRONMENT_LIB) $(DESTDIR)$(LIBDIR)
+install_shared_libraries: $(USAGE_ENVIRONMENT_LIB)
+	  ln -fs $(NAME).$(LIB_SUFFIX) $(DESTDIR)$(LIBDIR)/$(NAME).$(SHORT_LIB_SUFFIX)
+	  ln -fs $(NAME).$(LIB_SUFFIX) $(DESTDIR)$(LIBDIR)/$(NAME).so	
+	
+	
+	
+	
+	
+	
+
+
+##### Any additional, platform-specific rules come here:
