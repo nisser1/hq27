@@ -615,6 +615,7 @@ void *Media_Message_Receive_thread(void *arg)
 	{
 		msg->rindex[i] = 0;
 		msg->windex[i] = 0;
+		msg->windexEndPos[i] = 24883200;
 	}
 	//初始化管道
 	create_fifo("./fifo");

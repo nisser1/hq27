@@ -362,7 +362,11 @@ HI_VOID * SAMPLE_COMM_VDEC_SendStream(HI_VOID *pArgs)
 		do{
 			usleep(1000);
 			pthread_mutex_lock(&mutex);
-			s32ReadLen = buffDataNum(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId]);
+			//s32ReadLen = buffDataNum(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId]);
+
+            //等数据datasize = windex >= rindex ? windex-rindex : windex + windexEndPos - rindex  windexEndPos是记录20000000向后码流结束位置
+            //记录20000000向后是因为环形缓冲区的数据满时会导致结尾最后一帧数据不完整                                  然后将pu8buf送向解码器
+           s32ReadLen = (pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] >= pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]) ? (pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] - pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]) : (pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] + pstVdecThreadParam->msg->windexEndPos[pstVdecThreadParam->s32ChnId] - pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]); 
 			pthread_mutex_unlock(&mutex);
 		}while(s32ReadLen < 1000);
 		pthread_mutex_lock(&mutex);
@@ -529,13 +533,27 @@ SendAgain:
         {
 		//发送新数据
             bEndOfStream = HI_FALSE;
-			//s32UsedBytes = s32UsedBytes +s32ReadLen + u32Start;
-            //s32UsedBytes = 0;
+			s32UsedBytes = s32UsedBytes +s32ReadLen + u32Start;
+            s32UsedBytes = 0;
 			
 			//大缓冲区代码
 			pthread_mutex_lock(&mutex);
-			pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]=indexAdd(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],s32ReadLen);
-			pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]=indexAdd(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],u32Start);
+            
+            //如果windex > 20000000 那么将不再写数据  也就是说20000000后面有多少缓冲区不用取决于最后一帧的大小
+            if(pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] >= 20000000)
+            {
+                pstVdecThreadParam->msg->windexEndPos[pstVdecThreadParam->s32ChnId] =  pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId];
+                pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] = 0;
+            }
+            
+
+            pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]=indexAdd(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],s32ReadLen);
+
+            //超过20000000的位置要读取完 ， 否则会丢帧   所以这里用的是读取后的rindex和windexEndPos比较
+            if((pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId] >= pstVdecThreadParam->msg->windexEndPos[pstVdecThreadParam->s32ChnId]))
+            {                                                                                                                                                                                
+                pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId] = 0;                                                                                                                   
+            }
             u64PTS += pstVdecThreadParam->u64PtsIncrease;
 			pthread_mutex_unlock(&mutex);
         }

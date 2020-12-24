@@ -130,7 +130,7 @@ int buffNull(int rindex,int windex)
 }
 
 
-int readDataToBuff(int nread, unsigned char * dest_buff, unsigned char *src_buf,int rindex,int windex,MESSAGE *msg,int dataindex)
+/*int readDataToBuff(int nread, unsigned char * dest_buff, unsigned char *src_buf,int rindex,int windex,MESSAGE *msg,int dataindex)
 {
 	while(nread>0)
 	{
@@ -156,39 +156,16 @@ int readDataToBuff(int nread, unsigned char * dest_buff, unsigned char *src_buf,
 		nread -=readbuffFree;
 	}
 	return 0;
-}
+}*/
 
-int readDataToRingBuff(int nread, unsigned char * dest_buff, unsigned char *src_buf,int rindex,int windex,MESSAGE *msg,int dataindex)
+int readDataToBuff(int nread, unsigned char * dest_buff, unsigned char *src_buf,int rindex,int windex,MESSAGE *msg,int dataindex)
 {
-
-	/*while(nread>0)
-	{
-		int readbuffFree=0;
-		readbuffFree = buffFreeSpace(rindex, windex);
-
-		//剩余和连续空间选小的	
-		readbuffFree = (readbuffFree <= indexSubtract(BUF_SIZE,windex))?readbuffFree : indexSubtract(BUF_SIZE,windex);
-		//剩余空间与可以读取的个数选择小的	
-		readbuffFree = (readbuffFree <= nread) ? readbuffFree : nread;
-		if(readbuffFree)
-		{
-			memcpy(&dest_buff[windex],src_buf,readbuffFree);
-			windex = indexAdd(windex,readbuffFree);
-			//printf("windex = %d\n",windex);
-			msg->windex[dataindex] = windex;
-			//msg->rindex[dataindex] = rindex;			
-		}
-		else
-		{
-			break;
-		}
-		nread -=readbuffFree;
-	}*/
-
-    if(BUF_SIZE - windex > 0)
-    {
-
-    }
+    unsigned char start_code[4] = {0x00,0x00,0x00,0x01};
+    memcpy(&dest_buff[windex],start_code,4);
+    windex = indexAdd(windex,4);
+    memcpy(&dest_buff[windex],src_buf,nread);
+    windex = indexAdd(windex,nread);
+    msg->windex[dataindex] = windex;
 	return 0;
 }
 

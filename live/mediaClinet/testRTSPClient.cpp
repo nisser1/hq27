@@ -726,12 +726,8 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
 				if(fifo->bck_not_show[i] == -1)
 				{
 					pthread_mutex_lock(&mutex);
-					//if(i==0)
-						//printf("rtsp:buf-rindex=%d,buf-windex=%d,frameSize=%d,buf-windex+frameSize=%d\n",fifo->rindex[i],fifo->windex[i],frameSize,fifo->windex[i]+frameSize);
-					readDataToBuff(4,fifo->recv_buf[i],start_code,fifo->rindex[i],fifo->windex[i],fifo,i);
+                    //帧头在readDataBuff填入
 					readDataToBuff(frameSize,fifo->recv_buf[i],fReceiveBuffer,fifo->rindex[i],fifo->windex[i],fifo,i);
-					//if(i==0)
-						//printf("rtsp:buf-rindex=%d,buf-windex=%d\n",fifo->rindex[i],fifo->windex[i]);
 					pthread_mutex_unlock(&mutex);
 				}
 				else if(fifo->bck_not_show[i] == 1)

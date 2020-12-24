@@ -20,6 +20,7 @@ typedef struct message_info{
 	unsigned char recv_buf[9][BUF_SIZE];
 	int pos[2];
 	int bck_not_show[BCK_NOTSHOW_CHN];
+	int windexEndPos[9];
 }MESSAGE;
 
 

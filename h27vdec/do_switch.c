@@ -730,7 +730,6 @@ void *Media_Common_Receive_thread(void *arg)
 	{	
 		//接收解码命令  现在是从fifo接收
 		ret = read(msg->fd[0],recv_cmd,RECV_CMD_BUFFSIZE);
-		printf("write cmd_buf recv_cmd[7] = %d\n",recv_cmd[7]);
 		if(ret < 0)
 		{
 			printf("read fifo cmd error\n");
@@ -767,7 +766,6 @@ void *Media_Common_Receive_thread(void *arg)
 		{
 			//获取cmd
 			cmd = set_cmd(recv_cmd,msg,fp);
-			PRINTF_PRT("cmd vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv = %d\n",cmd);
 		}
 		if(cmd == 0)
 		{
