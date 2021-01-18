@@ -1,5 +1,0 @@
-sudo insmod Int_Nec_Drv.ko
-
-加载应用程序:测试。
-
-获取对应键盘如Int_Nec_Drv_App.c代码。

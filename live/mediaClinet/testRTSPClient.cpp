@@ -104,7 +104,7 @@ int openall(MESSAGE *msg)
 		{
 			ret = strlen(buff_rtsp_address);
 			strncpy(rtsp_address[i],buff_rtsp_address,ret-1);
-			printf("rsssss%s\n",rtsp_address[i]);
+			//printf("rsssss%s\n",rtsp_address[i]);
 			i++;
 		}
 	}
@@ -642,9 +642,9 @@ DummySink::DummySink(UsageEnvironment& env, MediaSubsession& subsession, char co
     : MediaSink(env),
       fSubsession(subsession)
 {
-	printf("sssssssssssssssssss1 %s\n",streamId);
+	//printf("sssssssssssssssssss1 %s\n",streamId);
     fStreamId = strDup(streamId);
-	printf("sssssssssssssssssss %s\n",fStreamId);
+	//printf("sssssssssssssssssss %s\n",fStreamId);
     fReceiveBuffer = new u_int8_t[DUMMY_SINK_RECEIVE_BUFFER_SIZE];
 }
 
@@ -689,7 +689,6 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
 #if 1
 
 	char bufname[128];
-	//fifo
 	for(int i = 0; i < VDEC_DECODE_CHN; i++)
 	{
 		//int i = 0,j = 0;
@@ -716,7 +715,7 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
 				readDataToBuff(4,fifo->recv_buf[i],start_code,fifo->rindex[i],fifo->windex[i],fifo,i);			
 				readDataToBuff(sps[1].sPropLength,fifo->recv_buf[i],sps[1].sPropBytes,fifo->rindex[i],fifo->windex[i],fifo,i);	
 				pthread_mutex_unlock(&mutex);
-				printf("write writerindex[0]=%8d\n",4+4+sps[0].sPropLength+sps[1].sPropLength);
+				//printf("write writerindex[0]=%8d\n",4+4+sps[0].sPropLength+sps[1].sPropLength);
 				firststream[i] = 0;
 				delete[] sps;
 			}

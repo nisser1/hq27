@@ -780,43 +780,43 @@ int HH_OSD_SetOsdPosDefault(int chn,int mode,int bigshow)//chn和cmd对应
 	}
 	if(strlen(pvideo_osd_status->Title) == 0)
 	{
-		if(chn == 0)
+		if(chn == 9)
 		{
 			sprintf(pvideo_osd_status->Title,"%s", "HDMI");	//ZIOTLAB就是要要显示的内容
 		}
+		else if(chn == 0)
+		{
+			sprintf(pvideo_osd_status->Title,"%s", "ZHC-1-1");	//ZIOTLAB就是要要显示的内容
+		}
 		else if(chn == 1)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZH-1-1");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZHC-1-2");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 2)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZH-1-2");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZHC-2-1");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 3)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZH-2-1");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZHC-2-2");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 4)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZH-2-2");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZC-1-1");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 5)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZC-1-1");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZC-1-2");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 6)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZC-1-2");	//ZIOTLAB就是要要显示的内容
+			sprintf(pvideo_osd_status->Title,"%s", "ZC-2-1");	//ZIOTLAB就是要要显示的内容
 		}
 		else if(chn == 7)
 		{
-			sprintf(pvideo_osd_status->Title,"%s", "ZC-2-1");	//ZIOTLAB就是要要显示的内容
-		}
-		else if(chn == 8)
-		{
 			sprintf(pvideo_osd_status->Title,"%s", "ZC-2-2");	//ZIOTLAB就是要要显示的内容
 		}
-		else if(chn == 9)
+		else if(chn == 8)
 		{
 			sprintf(pvideo_osd_status->Title,"%s", "CAMER");	//ZIOTLAB就是要要显示的内容
 		}

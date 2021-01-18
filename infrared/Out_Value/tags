@@ -1,0 +1,49 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CC	Makefile	/^CC = aarch64-himix100-linux-gcc$/;"	m
+DEBUG	gpio.h	13;"	d
+EXIT_FAILURE	gpio.h	26;"	d
+EXIT_SUCCESS	gpio.h	25;"	d
+GPIO14_0	gpio.h	41;"	d
+GPIO14_1	gpio.h	42;"	d
+GPIO14_2	gpio.h	43;"	d
+GPIO2_0	gpio.h	40;"	d
+GPIO_GET	gpio.h	30;"	d
+GPIO_IN	gpio.h	32;"	d
+GPIO_OUT	gpio.h	33;"	d
+GPIO_SET	gpio.h	29;"	d
+Gpio_fd	gpio.h	/^   int Gpio_fd;$/;"	m	struct:ztGpioPrivate
+LED1_Map	gpio.h	/^   volatile unsigned int *LED1_Map;$/;"	m	struct:ztGpioPrivate
+LED1_NUM	gpio.h	36;"	d
+LED2_Map	gpio.h	/^   volatile unsigned int *LED2_Map;$/;"	m	struct:ztGpioPrivate
+LED2_NUM	gpio.h	37;"	d
+LED3_Map	gpio.h	/^   volatile unsigned int *LED3_Map;$/;"	m	struct:ztGpioPrivate
+LED3_NUM	gpio.h	38;"	d
+LED4_Map	gpio.h	/^   volatile unsigned int *LED4_Map;$/;"	m	struct:ztGpioPrivate
+LED4_NUM	gpio.h	39;"	d
+LED_NUM	main.c	/^const unsigned char LED_NUM[4] = {$/;"	v
+MAX	gpio.h	23;"	d
+MAX_INPUT	gpio.h	28;"	d
+MIN	gpio.h	22;"	d
+OBJS	Makefile	/^OBJS = $(patsubst %.c ,%.o ,$(SRC))$/;"	m
+SRC	Makefile	/^SRC =  $(shell ls *.c)$/;"	m
+TARGET	Makefile	/^TARGET = $(notdir $(CURDIR))_test$/;"	m
+dbg_perror	gpio.h	16;"	d
+dbg_perror	gpio.h	19;"	d
+dbg_printf	gpio.h	15;"	d
+dbg_printf	gpio.h	18;"	d
+main	main.c	/^int main(int argc, char *argv[])$/;"	f
+ztGpioExport	gpio.c	/^int ztGpioExport(int number)$/;"	f
+ztGpioGetDir	gpio.c	/^int ztGpioGetDir(int number, char *dir)$/;"	f
+ztGpioGetLevel	gpio.c	/^int ztGpioGetLevel(int number, char *level)$/;"	f
+ztGpioPrivate	gpio.h	/^struct ztGpioPrivate{$/;"	s
+ztGpioSetDir	gpio.c	/^int ztGpioSetDir(int number, int dir)$/;"	f
+ztGpioSetLevel	gpio.c	/^int ztGpioSetLevel(int number, int level)$/;"	f
+ztGpioUnexport	gpio.c	/^int ztGpioUnexport(int number)$/;"	f
+ztInitGpioMap	gpio.c	/^int ztInitGpioMap(struct ztGpioPrivate *Private)$/;"	f
+ztPrivate	main.c	/^struct ztGpioPrivate ztPrivate;$/;"	v	typeref:struct:ztGpioPrivate
+ztReleaseGpioMap	gpio.c	/^int ztReleaseGpioMap(struct ztGpioPrivate *Private)$/;"	f

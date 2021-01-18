@@ -546,6 +546,11 @@ SendAgain:
                 pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId] = 0;
             }
             
+           if((pstVdecThreadParam->s32ChnId == 4))
+           {
+              // printf("r1 rindex %d    windex %d \n",pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId]);
+           }
+            
 
             pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId]=indexAdd(pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],s32ReadLen);
 
@@ -556,6 +561,11 @@ SendAgain:
             }
             u64PTS += pstVdecThreadParam->u64PtsIncrease;
 			pthread_mutex_unlock(&mutex);
+
+           if((pstVdecThreadParam->s32ChnId == 4))
+           {
+            //   printf("r2 rindex %d    windex %d \n",pstVdecThreadParam->msg->rindex[pstVdecThreadParam->s32ChnId],pstVdecThreadParam->msg->windex[pstVdecThreadParam->s32ChnId]);
+           }
         }
 		
         usleep(pstVdecThreadParam->s32IntervalTime);//延时1000us

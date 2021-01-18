@@ -3,7 +3,7 @@
 #include <pthread.h>
 typedef unsigned char u_int8_t;	
 //#define BUF_SIZE 12441600
-#define BUF_SIZE 12441600
+#define BUF_SIZE 24883200
 #define BCK_NOTSHOW_CHN 9
 #define MAX_VOCHN 10
 #define VDEC_DECODE_CHN 9
@@ -21,6 +21,8 @@ typedef struct message_info{
 	int pos[2];
 	int bck_not_show[BCK_NOTSHOW_CHN];
 	int windexEndPos[9];
+	int fd_key;
+	int fd_iic;
 }MESSAGE;
 
 

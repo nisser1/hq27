@@ -24,6 +24,10 @@ extern "C"{
 #include "hh_osd.h"
 #include "do_switch.h"
 }
+
+#define BT1120_DIS 0
+#define VEDIO_DIS_MOD_9 1
+
 VO_INTF_SYNC_E g_enIntfSync = VO_OUTPUT_1080P30;
 VO_INTF_TYPE_E enVoIntfTypebt1120 = VO_INTF_HDMI;
 
@@ -43,6 +47,7 @@ HI_VOID SAMPLE_VDEC_HandleSig(HI_S32 signo)
 }
 #endif
 
+
 HI_VOID SAMPLE_VDEC_Usage(char *sPrgNm)
 {
     printf("\n/************************************/\n");
@@ -59,7 +64,6 @@ HI_VOID SAMPLE_VDEC_Usage(char *sPrgNm)
     printf("\t1: VO HDMI 1080P@30fps.\n");
     printf("/************************************/\n\n");
 }
-
 
 
 
@@ -267,7 +271,6 @@ HI_S32 SAMPLE_VIO_8K30_PARALLEL(VO_INTF_TYPE_E enVoIntfType)
 
 
 
-
 HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
 {
     VB_CONFIG_S stVbConfig;
@@ -286,7 +289,7 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
     HI_BOOL abChnEnable[VPSS_MAX_CHN_NUM];
     VO_INTF_SYNC_E enIntfSync;
 	HI_U32 u32BlkSize;
-    u32VdecChnNum = 10;
+    u32VdecChnNum = 9;
     VpssGrpNum    = u32VdecChnNum;
 
 
@@ -318,12 +321,12 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
     stVbConfig.astCommPool[0].u32BlkCnt  = 10*u32VdecChnNum;//每个缓存吃缓存块的个数 取值范围(0,10240]
     stVbConfig.astCommPool[0].u64BlkSize = COMMON_GetPicBufferSize(stDispSize.u32Width, stDispSize.u32Height,
                                                 PIXEL_FORMAT_YVU_SEMIPLANAR_420, DATA_BITWIDTH_8, COMPRESS_MODE_SEG, 0);
-	printf("stVbConfig.astCommPool[0].u64BlkSize=%d\n",stVbConfig.astCommPool[0].u64BlkSize);				
-	
+#if BT1120_DIS
+	//目前是只在测试按键发生时才显示FT2000画面 无需屏蔽			
 	u32BlkSize = VI_GetRawBufferSize(stDispSize.u32Width, stDispSize.u32Height, PIXEL_FORMAT_RGB_BAYER_16BPP, COMPRESS_MODE_NONE, DEFAULT_ALIGN);
     stVbConfig.astCommPool[1].u64BlkSize  = u32BlkSize;
     stVbConfig.astCommPool[1].u32BlkCnt   = 4;
-	printf("stVbConfig.astCommPool[1].u64BlkSize=%d\n",u32BlkSize);
+#endif
 
     s32Ret = SAMPLE_COMM_SYS_Init(&stVbConfig);
     if(s32Ret != HI_SUCCESS)
@@ -337,7 +340,7 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
     /************************************************
     step2:  init module VB or user VB(for VDEC)
     *************************************************/
-    for(i=0; i<u32VdecChnNum-1; i++)
+    for(i=0; i<u32VdecChnNum; i++)
     {
         astSampleVdec[i].enType                           = PT_H264;
         astSampleVdec[i].u32Width                         = 1920;
@@ -350,7 +353,7 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
         astSampleVdec[i].u32FrameBufCnt = astSampleVdec[i].stSapmleVdecVideo.u32RefFrameNum + astSampleVdec[i].u32DisplayFrameNum + 1;//解码图像帧存个数  满足解码要求  h264 参考帧+显示帧+1
     }
 	//分配视频缓存空间
-    s32Ret = SAMPLE_COMM_VDEC_InitVBPool(u32VdecChnNum-1, &astSampleVdec[0]);
+    s32Ret = SAMPLE_COMM_VDEC_InitVBPool(u32VdecChnNum, &astSampleVdec[0]);
     if(s32Ret != HI_SUCCESS)
     {
         SAMPLE_PRT("init mod common vb fail for %#x!\n", s32Ret);
@@ -363,19 +366,19 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
     /************************************************
     step3:  start VDEC
     *************************************************/
-    s32Ret = SAMPLE_COMM_VDEC_Start(u32VdecChnNum-1, &astSampleVdec[0]);
+    s32Ret = SAMPLE_COMM_VDEC_Start(u32VdecChnNum, &astSampleVdec[0]);
     if(s32Ret != HI_SUCCESS)
     {
         SAMPLE_PRT("start VDEC fail for %#x!\n", s32Ret);
         goto END3;
     }
-	
 	/*
 			special step  enable bt1120 collection 
+			目前是只在测试按键发生时才显示FT2000画面 无需屏蔽
 	*/
+#if 0
 	s32Ret = SAMPLE_VIO_8K30_PARALLEL(enVoIntfTypebt1120);
-	
-	
+#endif 
 	
 	
     /************************************************
@@ -449,34 +452,39 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
         goto END5;
     }
 	
-	
+
 	
     /************************************************
     step6:  VDEC bind VPSS
 	vichn	vipipe	vdec   vpssgrop   	vpsschn  	vo
-	  0		  0					0			0		0	
-					0 			1			0		1	
-					1			2			0		2
-					2		   	3			0		3
-					3			4			0		4
-					4			5			0		5	
-					5			6			0		6
-					6			7			0		7
-					7			8			0		8
-					8			9			0		9
+					 				
+					1			1			0		1
+					2		   	2			0		2
+					3			3			0		3
+					4			4			0		4	
+					5			5			0		5
+					6			6			0		6
+					7			7			0		7
+					8			8			0		8
+					0			9			0		9
+	//单独显示一个				
+	0		0					0			0		0
+
 
     *************************************************/
-	printf("smmmmmmmmmmmmmmmmmmmmsmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\n");
-	s32Ret = SAMPLE_COMM_VI_Bind_VPSS(0, 0, 0);
+	
+//这里九屏模式不要 只对测试按键响应FT2000画面
+#if BT1120_DIS
+	s32Ret = SAMPLE_COMM_VI_Bind_VPSS(0, 0, 9);
     if (HI_SUCCESS != s32Ret)
     {
         SAMPLE_PRT("SAMPLE_COMM_VI_Bind_VPSS failed with %d!\n", s32Ret);
     }
-	printf("smmmmmmmmmmmmmmmmmmmmsmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm1\n");
+#endif
 
-    for(i=1; i<u32VdecChnNum; i++)
+    for(i=0; i<u32VdecChnNum; i++)
     {
-        s32Ret = SAMPLE_COMM_VDEC_Bind_VPSS(i-1, i);
+        s32Ret = SAMPLE_COMM_VDEC_Bind_VPSS(i, i);
         if(s32Ret != HI_SUCCESS)
         {
             SAMPLE_PRT("vdec bind vpss fail for %#x!\n", s32Ret);
@@ -496,11 +504,18 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
             goto END7;
         }
     }
-	
-	/*
+#if VEDIO_DIS_MOD_9
+	s32Ret = SAMPLE_COMM_VPSS_UnBind_VO(0, 0, VoLayer,0);
+	s32Ret = SAMPLE_COMM_VPSS_Bind_VO(0, 0, VoLayer,9);
+#endif
+#if BT1120_DIS
+	SAMPLE_COMM_VPSS_Bind_VO(9 ,0, 0, 0);
+#endif
+/*
 	step8: create osd 
-	*/
+*/
 	
+#if BT1120_DIS	
 	for(i = 0 ; i < 10 ; i++ )
 	{
 		if(i == 9)
@@ -509,18 +524,29 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
 			continue;	
 		}
 		HH_OSD_Init(i,9,190+i,0);
+	
+#endif
+#if VEDIO_DIS_MOD_9
+	for(i = 0 ; i < 9 ; i++ )
+	{
+		if(i == 0)
+		{
+			HH_OSD_Init(0,10,190,0);
+			HH_OSD_Init(9,10,190,0);
+			continue;	
+		}
+		HH_OSD_Init(i,9,190+i,0);
 	}
-	previous_mode_all = 199;
+#endif
+	previous_mode_all = 190;
 	current_vdeio_display_mode = 9;
 	who_in_pos9 = 9;
-	
-	
 	
 	
     /************************************************
     step8:  send stream to VDEC
     *************************************************/
-    for(i=0; i<u32VdecChnNum-1; i++)
+    for(i=0; i<u32VdecChnNum; i++)
     {
         snprintf(stVdecSend[i].cFileName, sizeof(stVdecSend[i].cFileName), "3840x2160_8bit.h264");
         snprintf(stVdecSend[i].cFilePath, sizeof(stVdecSend[i].cFilePath), "%s", SAMPLE_STREAM_PATH);
@@ -536,11 +562,11 @@ HI_S32 SAMPLE_H264_VDEC_VPSS_VO(MESSAGE *msg)
         stVdecSend[i].s32MinBufSize   = (astSampleVdec[i].u32Width * astSampleVdec[i].u32Height * 3)>>1; //缓存一帧的大小  YUV420格式视频  Y = W *H , UV=W*H/2  ALL = W*H + W+H/2
 		stVdecSend[i].msg = msg;
     }
-    SAMPLE_COMM_VDEC_StartSendStream(u32VdecChnNum-1, &stVdecSend[0], &VdecThread[0]);
-    SAMPLE_COMM_VDEC_CmdCtrl(u32VdecChnNum-1, &stVdecSend[0], &VdecThread[0]);
+    SAMPLE_COMM_VDEC_StartSendStream(u32VdecChnNum, &stVdecSend[0], &VdecThread[0]);
+    SAMPLE_COMM_VDEC_CmdCtrl(u32VdecChnNum, &stVdecSend[0], &VdecThread[0]);
 
 
-    SAMPLE_COMM_VDEC_StopSendStream(u32VdecChnNum-1, &stVdecSend[0], &VdecThread[0]);
+    SAMPLE_COMM_VDEC_StopSendStream(u32VdecChnNum, &stVdecSend[0], &VdecThread[0]);
 
 END7:
     for(i=0; i<VpssGrpNum; i++)
@@ -553,7 +579,7 @@ END7:
     }
 
 END6:
-    for(i=0; i<u32VdecChnNum-1; i++)
+    for(i=0; i<u32VdecChnNum; i++)
     {
         s32Ret = SAMPLE_COMM_VDEC_UnBind_VPSS(i, i);
         if(s32Ret != HI_SUCCESS)
@@ -610,6 +636,10 @@ void *Media_Message_Receive_thread(void *arg)
 { 	
 	int ret = 0;
 	int i;	
+	int  oflags;
+    int fd_key;
+	int fd_iic;
+	int media_Recv_Thread_Exit_Flag;
 	MESSAGE *msg = (MESSAGE *)malloc(sizeof(MESSAGE));
 	for(i = 0; i < 9; i++)
 	{
@@ -629,6 +659,42 @@ void *Media_Message_Receive_thread(void *arg)
 		printf("open fifo Failed!!\n");
 	}
 	
+
+
+	fd_key = open("/dev/fakeChenIntGpio_dev", O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd_key != -1) 
+    {
+		signal(SIGUSR2, signal_key_handler);
+		fcntl(fd_key, F_SETOWN, getpid());
+		oflags = fcntl(fd_key, F_GETFL);
+		fcntl(fd_key, F_SETFL, oflags | FASYNC);
+		fcntl(fd_key, 10, SIGUSR2);
+	}
+    else 
+    {
+		printf("device open failure\n");
+	}
+	fd_iic = open("/dev/FakeIntGpio_dev", O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd_iic != -1) 
+    {
+		signal(SIGUSR1, signal_iic_handler);
+		fcntl(fd_iic, F_SETOWN, getpid());
+		oflags = fcntl(fd_iic, F_GETFL);
+		fcntl(fd_iic, F_SETFL, oflags | FASYNC);
+		fcntl(fd_iic, 10, SIGUSR1);
+	}
+    else 
+    {
+		printf("device open failure\n");
+	}
+	
+	msg->fd_key = fd_key;
+	msg->fd_iic = fd_iic;
+	
+
+	
+	
+
 	//初始化线程锁
 	ret = pthread_cond_init(&cond,NULL);
 	ret = pthread_mutex_init(&mutex,NULL);
@@ -637,12 +703,14 @@ void *Media_Message_Receive_thread(void *arg)
 		return;
 	}
 	HI_S32 s32Ret = HI_SUCCESS;
-	pthread_t tid[2];
+	pthread_t tid[3];
 	g_enIntfSync = VO_OUTPUT_1080P30;
 
 	s32Ret = pthread_create(&tid[0], NULL, Media_Message_Receive_thread,msg);
 	s32Ret = pthread_create(&tid[1], NULL, (void *)Media_Common_Receive_thread,msg);
-	
+	s32Ret = pthread_create(&tid[2], NULL, (void *)set_light_thread,msg);
+	//pthread_join(tid[1],NULL);
+
 	s32Ret = SAMPLE_H264_VDEC_VPSS_VO(msg);
 #ifndef __HuaweiLite__
     signal(SIGINT, SAMPLE_VDEC_HandleSig);
@@ -657,13 +725,11 @@ void *Media_Message_Receive_thread(void *arg)
         SAMPLE_PRT("program exit abnormally!\n");
     }
 	
-	int media_Recv_Thread_Exit_Flag = pthread_join(&tid[0],NULL);
-	media_Recv_Thread_Exit_Flag = pthread_join(&tid[1],NULL);
+	media_Recv_Thread_Exit_Flag = pthread_join(tid[0],NULL);
+	
 	if(media_Recv_Thread_Exit_Flag == 0)
 	{
 		printf("media recv thread exit!!\n");
 	}
     return s32Ret;
 }
-
-

@@ -1,0 +1,1 @@
+cmd_/home/nisser/work/hq27/src/infrared/In_Interrupt/Int_Gpio_Drv.ko := aarch64-himix100-linux-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/nisser/work/hq27/src/infrared/In_Interrupt/Int_Gpio_Drv.ko /home/nisser/work/hq27/src/infrared/In_Interrupt/Int_Gpio_Drv.o /home/nisser/work/hq27/src/infrared/In_Interrupt/Int_Gpio_Drv.mod.o ;  true
